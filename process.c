@@ -22,38 +22,6 @@ void set_affinity(int pid, int affinity){
 	}
 }
 
-/*
-int proc_exec(struct process proc)
-{
-	int pid = fork();
-
-	if (pid < 0) {
-		perror("fork");
-		return -1;
-	}
-
-	if (pid == 0) {
-		unsigned long start_sec, start_nsec, end_sec, end_nsec;
-		char to_dmesg[200];
-		syscall(GET_TIME, &start_sec, &start_nsec);
-		for (int i = 0; i < proc.t_exec; i++) {
-			UNIT_T();
-#ifdef DEBUG
-			if (i % 100 == 0)
-				fprintf(stderr, "%s: %d/%d\n", proc.name, i, proc.t_exec);
-#endif
-		}
-		syscall(GET_TIME, &end_sec, &end_nsec);
-		sprintf(to_dmesg, "[project1] %d %lu.%09lu %lu.%09lu\n", getpid(), start_sec, start_nsec, end_sec, end_nsec);
-		syscall(PRINTK, to_dmesg);
-		exit(0);
-	}
-	
-	proc_assign_cpu(pid, CHILD_CPU);
-
-	return pid;
-}
-*/
 int block_process(int pid)
 {
 	struct sched_param param;

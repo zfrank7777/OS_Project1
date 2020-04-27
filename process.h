@@ -24,13 +24,10 @@ struct process
 /* Assign process to specific core */
 void set_affinity(int pid, int affinity);
 
-/* Execute the process and return pid */
-// int proc_exec(struct process proc);
-
 /* Set very low priority tp process */
 int block_process(int pid);
 
 /* Set high priority to process */
-// int proc_wakeup(int pid);
+int wakeup_process(int pid);
 
 #endif
