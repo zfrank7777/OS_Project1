@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sched.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include "scheduler.h"
 #include "process.h"
@@ -45,11 +46,19 @@ int pick_next_process(int policy, int N, int running, int* waiting, struct proce
 				return waiting[w];
 		return -1;
 	} else if (policy == RR) {
+		/* new: search waiting process with the most early ready_time */ 
+		int min_ready_time = 2147483647;
+		for (int w=0; w<N; w++)
+			if (waiting[w] != -1 && child[waiting[w]].exec_time > 0 && 
+			   child[waiting[w]].ready_time >= 0 && min_ready_time > child[waiting[w]].ready_time)
+				min_ready_time = child[waiting[w]].ready_time;
 		for (int w=(running+1)%N; w<N; w++)
-			if ((waiting[w] != -1) && child[waiting[w]].exec_time > 0)
+			if ((waiting[w] != -1) && child[waiting[w]].exec_time > 0 && 
+			    child[waiting[w]].ready_time == min_ready_time)
 				return waiting[w];
 		for (int w=0; w<=running; w++)
-			if ((waiting[w] != -1) && child[waiting[w]].exec_time > 0)
+			if ((waiting[w] != -1) && child[waiting[w]].exec_time > 0 && 
+			    child[waiting[w]].ready_time == min_ready_time)
 				return waiting[w];
 		return -1;
 	} else {  // SJF & PSJF
@@ -143,6 +152,9 @@ int schedule(int policy, int N, struct process * child)
 		for (int i=0; i<round_time; i++) WORK(); 
 		current_time += round_time;
 		
+		/* new: update ready_time for priority in RR */
+		child[running].ready_time = current_time;
+
 		child[running].exec_time -= round_time;
 		if (child[running].exec_time < 0) printf("ERROR: exec time < 0\n");
 		if (child[running].exec_time == 0)
